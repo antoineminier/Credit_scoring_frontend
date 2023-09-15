@@ -14,12 +14,12 @@ st.set_page_config(layout="wide")
 
 st.title('Loan application dashboard')
 
-number_of_features = int(requests.get(url='http://127.0.0.1:8000/get_number_of_features').json())
+number_of_features = int(requests.get(url='https://credit-scoring-backend.onrender.com/get_number_of_features').json())
 
 col1, col2, col3, col4 = st.columns(4)
 id = col1.text_input('Enter client ID')
 if id:
-    res = json.loads(requests.get(url=f'http://127.0.0.1:8000/predict/{id}').text)
+    res = json.loads(requests.get(url=f'https://credit-scoring-backend.onrender.com/predict/{id}').text)
     if isinstance(res, str):
         st.subheader(res)
     else:
@@ -32,7 +32,7 @@ if id:
         
         show_impacts = st.checkbox('Show feature impacts')
         if show_impacts:
-            explanation_dict = requests.get(url=f'http://127.0.0.1:8000/explain/{id}').json()
+            explanation_dict = requests.get(url=f'https://credit-scoring-backend.onrender.com/explain/{id}').json()
             explanation = shap.Explanation(values=np.array(explanation_dict['values']), 
                                            base_values=explanation_dict['expected_value'], 
                                            data=explanation_dict['data'],
@@ -54,7 +54,7 @@ if id:
 
             see_descriptions = st.checkbox("See features' descriptions")
             if see_descriptions:
-                descriptions = json.loads(requests.get(url=f'http://127.0.0.1:8000/descriptions').text)
+                descriptions = json.loads(requests.get(url=f'https://credit-scoring-backend.onrender.com/descriptions').text)
                 abs_values = [abs(el) for el in explanation_dict['values']]
                 for i in range(n_features):
                     index = abs_values.index(sorted(abs_values, reverse=True)[i])
@@ -71,7 +71,7 @@ if id:
                     n_features = number_of_features
             
             if n_features!=0:
-                features = requests.get(url=f'http://127.0.0.1:8000/compare/{id}').json()
+                features = requests.get(url=f'https://credit-scoring-backend.onrender.com/compare/{id}').json()
                 figures = []
                 subplot_titles = []
                 for i in range(n_features):
