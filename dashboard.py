@@ -22,12 +22,11 @@ if id:
     if isinstance(res, str):
         st.subheader(res)
     else:
-        if res['prediction']==1:
+        if res['probability']>res['threshold']:
             st.subheader('loan refused')
-            st.subheader(f"solvency score : {round(res['probability'], 2)}\nscore from 0 to 1 – Must be over 0.5 for the loan to be granted")
-        elif res['prediction']==0:
+        elif res['probability']<=res['threshold']:
             st.subheader('loan granted')
-            st.subheader(f"solvency score : {round(res['probability'], 2)}\nscore from 0 to 1 – Must be over 0.5 for the loan to be granted")
+        st.subheader(f"default probability : {round(res['probability']*100, 1)} %\nmust not be over 6 % for the loan to be granted")
         
         show_impacts = st.checkbox('Show feature impacts')
         if show_impacts:
