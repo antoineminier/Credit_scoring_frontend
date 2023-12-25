@@ -12,4 +12,5 @@ See also [the backend part repository](https://github.com/antoineminier/Credit_s
 ## Files description
 
 dashboard.py : the file containing the frontend code with Streamlit
+
 requirements.txt : the list of packages and their version necessary to run the dashboard.py file
