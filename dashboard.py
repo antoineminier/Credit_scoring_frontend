@@ -42,7 +42,7 @@ if id:
                                      step=1)
             col1, col2 = st.columns([0.3, 0.7])
             with col2:
-                st.header("Impacts on score of the most impactful features")
+                st.header("Impact on score of the most impactful features")
             st_shap(shap.plots.waterfall(explanation, max_display=n_features+1), width=1150)
 
             chart_explanation = st.checkbox('See chart explanation')
