@@ -35,11 +35,14 @@ if id:
                                            base_values=explanation_dict['expected_value'], 
                                            data=explanation_dict['data'],
                                            feature_names=explanation_dict['feature_names'])
-            col1, col2, col3, col4 = st.columns(4)
+            col1, col2 = st.columns([0.25, 0.75])
             n_features = col1.slider('To which nth most impactful feature get the impact on score :', 
                                      min_value=10, 
                                      max_value=number_of_features,
                                      step=1)
+            col1, col2 = st.columns([0.3, 0.7])
+            with col2:
+                st.header("Impacts on score of the most impactful features")
             st_shap(shap.plots.waterfall(explanation, max_display=n_features+1), width=1150)
 
             chart_explanation = st.checkbox('See chart explanation')
