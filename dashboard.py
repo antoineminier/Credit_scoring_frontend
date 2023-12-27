@@ -28,6 +28,7 @@ if id:
             st.subheader('loan granted')
         st.subheader(f"default probability : {round(res['probability']*100, 1)} %\nmust not be over {str(round(res['threshold']*100))} % for the loan to be granted")
         
+        st.text("")
         show_impacts = st.checkbox('Show feature impacts')
         if show_impacts:
             explanation_dict = requests.get(url=f'https://credit-scoring-backend.onrender.com/explain/{id}').json()
@@ -35,12 +36,12 @@ if id:
                                            base_values=explanation_dict['expected_value'], 
                                            data=explanation_dict['data'],
                                            feature_names=explanation_dict['feature_names'])
-            col1, col2 = st.columns([0.25, 0.75])
+            col1, col2 = st.columns([0.3, 0.7])
             n_features = col1.slider('To which nth most impactful feature get the impact on the default probability :', 
                                      min_value=10, 
                                      max_value=number_of_features,
                                      step=1)
-            col1, col2 = st.columns([0.3, 0.7])
+            col1, col2 = st.columns([0.2, 0.8])
             with col2:
                 st.header("Impact of the most impactful features on the default probability")
             st_shap(shap.plots.waterfall(explanation, max_display=n_features+1), width=1150)
@@ -62,6 +63,7 @@ if id:
                     st.write(f"{explanation_dict['feature_names'][index]} : {descriptions[explanation_dict['feature_names'][index]]}")
             st.write('')
 
+            st.text("")
             col1, col2, col3, col4 = st.columns(4)
             n_features = col1.slider('To which nth most impactful feature get information on :', 
                                      min_value=0, 
