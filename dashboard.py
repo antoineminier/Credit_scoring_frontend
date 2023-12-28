@@ -38,7 +38,7 @@ if id:
                                            data=explanation_dict['data'],
                                            feature_names=explanation_dict['feature_names'])
             
-            st.markdown("To which n<sup>th</sup> most impactful feature get the impact on the default probability :", unsafe_allow_html=True)
+            st.markdown("To which n<sup>th</sup> most impactful feature on the default probability get the impact :", unsafe_allow_html=True)
             col1, col2 = st.columns([0.3, 0.7])
             n_features = col1.slider("To which nth most impactful feature get the impact on the default probability :",
                                      min_value=10, 
