@@ -9,6 +9,12 @@ The data used are those of the [Home Credit Default Risk Kaggle's competition](h
 See also [the backend part repository](https://github.com/antoineminier/Credit_scoring_backend).
 
 
+Demo of the Streamlit dashboard :
+
+https://github.com/antoineminier/Credit_scoring_frontend/assets/143601336/dc8ae703-7fbb-4b1a-9c59-03297e6d40ec
+
+
+
 ## Files description
 
 dashboard.py : the file containing the frontend code with Streamlit
