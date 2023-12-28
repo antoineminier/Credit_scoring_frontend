@@ -11,7 +11,8 @@ from streamlit_shap import st_shap
 
 st.set_page_config(layout="wide")
 
-st.title('Loan application dashboard')
+st.markdown("<h1 style='text-align: center;'>LOAN APPLICATION DASHBOARD</h1>", unsafe_allow_html=True)
+st.text("")
 
 number_of_features = int(requests.get(url='https://credit-scoring-backend.onrender.com/get_number_of_features').json())
 
@@ -36,11 +37,14 @@ if id:
                                            base_values=explanation_dict['expected_value'], 
                                            data=explanation_dict['data'],
                                            feature_names=explanation_dict['feature_names'])
+            
+            st.markdown("To which n<sup>th</sup> most impactful feature get the impact on the default probability :", unsafe_allow_html=True)
             col1, col2 = st.columns([0.3, 0.7])
-            n_features = col1.slider('To which nth most impactful feature get the impact on the default probability :', 
+            n_features = col1.slider("To which nth most impactful feature get the impact on the default probability :",
                                      min_value=10, 
                                      max_value=number_of_features,
-                                     step=1)
+                                     step=1,
+                                     label_visibility="collapsed")
             col1, col2 = st.columns([0.2, 0.8])
             with col2:
                 st.header("Impact of the most impactful features on the default probability")
@@ -64,63 +68,80 @@ if id:
             st.write('')
 
             st.text("")
+            st.markdown(f"<h2 style='text-align: center;'>Comparison with the other loan applicants</h2>", unsafe_allow_html=True)
+            st.text("")
+            st.markdown("To which n<sup>th</sup> most impactful feature get information on :", unsafe_allow_html=True)
             col1, col2, col3, col4 = st.columns(4)
-            n_features = col1.slider('To which nth most impactful feature get information on :', 
+            n_features = col1.slider("To which nth most impactful feature get information on :", 
                                      min_value=0, 
                                      max_value=number_of_features, 
                                      value=3,
-                                     step=3)
-            if n_features > number_of_features:
-                    n_features = number_of_features
+                                     step=3,
+                                     label_visibility="collapsed")
             
             if n_features!=0:
                 features = requests.get(url=f'https://credit-scoring-backend.onrender.com/compare/{id}').json()
                 figures = []
-                subplot_titles = []
                 for i in range(n_features):
                     barchart_df = pd.DataFrame(data=features[i]['barchart_dict']['data'], 
                                                columns=features[i]['barchart_dict']['columns'])
+                    if features[i]['feature_impact']>=0:
+                        feature_impact = f"+{round(features[i]['feature_impact'], 2)}"
+                    else:
+                        feature_impact = f"{round(features[i]['feature_impact'], 2)}"
                     if list(barchart_df.columns)==['category', 'loan_status', 'count']:
                         color_discrete_map = {'granted': '#00cc96', 'refused': '#EF553B'}
-                        figures.append(px.bar(barchart_df, 
-                                              x='category', 
-                                              y='count', 
-                                              color='loan_status',
-                                              color_discrete_map=color_discrete_map))
-                        if features[i]['feature_impact']>=0:
-                            feature_impact = f"+{round(features[i]['feature_impact'], 2)}"
-                        else:
-                            feature_impact = f"{round(features[i]['feature_impact'], 2)}"
-                        title = f"{features[i]['feature']}  —  client value: {features[i]['client_value']}  —  impact on score: {feature_impact}"
-                        subplot_titles.append(title)
+                        title = f"feature : {features[i]['feature']}<br><sup>client value: {features[i]['client_value']}  —  impact on default probability: {feature_impact}</sup>"
+                        barchart = px.bar(barchart_df, 
+                                          x='category', 
+                                          y='count', 
+                                          barmode='group',
+                                          color='loan_status',
+                                          color_discrete_map=color_discrete_map, 
+                                          title=title)
                     else:
-                        figures.append(px.bar(barchart_df, 
-                                              x='value displayed', 
-                                              y=features[i]['feature']))
-                        if features[i]['feature_impact']>=0:
-                            feature_impact = f"+{round(features[i]['feature_impact'], 2)}"
-                        else:
-                            feature_impact = f"{round(features[i]['feature_impact'], 2)}"
-                        title = f"{features[i]['feature']}  —  impact on score: {feature_impact}"
-                        subplot_titles.append(title)
+                        title = f"feature : {features[i]['feature']}<br><sup>impact on default probability: {feature_impact}</sup>"
+                        barchart = px.bar(barchart_df, 
+                                          x='value displayed', 
+                                          y=features[i]['feature'], 
+                                          barmode='group',
+                                          title=title)
+                    barchart.update_layout(xaxis_title='', 
+                                           yaxis_title='',
+                                           title_font_size=20,
+                                           title_x=0.5,
+                                           title_xanchor="center", 
+                                           legend=dict(
+                                               yanchor="top",
+                                               y=0.99,
+                                               xanchor="left",
+                                               x=0.8
+                                           ))
+                    figures.append(barchart)
+
+                n_rows = 0
+                charts_displayed = 0
+                while n_rows < (n_features // 3) :
+                    col1, col2, col3 = st.columns(3)
+                    n_rows += 1
+                    with col1:
+                        st.plotly_chart(figures[charts_displayed], use_container_width=True)
+                        charts_displayed += 1
+                    with col2:
+                        st.plotly_chart(figures[charts_displayed], use_container_width=True) 
+                        charts_displayed += 1
+                    with col3:
+                        st.plotly_chart(figures[charts_displayed], use_container_width=True)
+                        charts_displayed += 1
                 
-                fig = make_subplots(rows=math.ceil(len(figures)/3), 
-                                    cols=3, 
-                                    subplot_titles=subplot_titles, 
-                                    horizontal_spacing=0.1) 
-
-                for i, figure in enumerate(figures):
-                    if i % 3 == 0:
-                        nth_col=1
-                    elif (i-1) % 3 == 0:
-                        nth_col=2
-                    elif (i-2) % 3 == 0:
-                        nth_col=3
-                    for trace in range(len(figure["data"])):
-                        fig.append_trace(figure["data"][trace], row=math.ceil((i+1)/3), col=nth_col)
-
-                fig.update_layout(title_text=f"First {n_features} impactful features on the score", 
-                                  height=600*math.ceil(len(figures)/3), 
-                                  showlegend=False)
-
-                st.plotly_chart(fig, use_container_width=True)
+                if n_features - charts_displayed == 1 :
+                    col1, col2, col3 = st.columns(3)
+                    with col1:
+                        st.plotly_chart(figures[charts_displayed], use_container_width=True)
+                if n_features - charts_displayed ==2 :
+                    col1, col2, col3 = st.columns(3)
+                    with col1:
+                        st.plotly_chart(figures[charts_displayed], use_container_width=True)
+                        charts_displayed += 1
+                    with col2:
+                        st.plotly_chart(figures[charts_displayed], use_container_width=True)
