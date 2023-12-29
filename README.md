@@ -10,8 +10,8 @@ See also [the backend part repository](https://github.com/antoineminier/Credit_s
 
 
 Demo of the Streamlit dashboard :
-[<img src="https://raw.githubusercontent.com/antoineminier/Credit_scoring_frontend/main/screenshot_dashboard.png">](https://github.com/antoineminier/Credit_scoring_frontend/assets/143601336/e4bc78d6-dfe7-4642-ab4c-3739dc378f36)
-
+[<img width="40px" src="https://raw.githubusercontent.com/antoineminier/Credit_scoring_frontend/main/screenshot_dashboard.png">](https://github.com/antoineminier/Credit_scoring_frontend/assets/143601336/eafe156d-56d5-448e-915d-0b9929176e44
+)
 
 
 
